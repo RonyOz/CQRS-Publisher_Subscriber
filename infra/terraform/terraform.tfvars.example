@@ -1,0 +1,17 @@
+project_name          = "cqrs-pub-sub-demo"
+location              = "eastus"
+resource_group_name   = "cqrs-pub-sub-demo"
+vm_name               = "vm-cqrs-pub-sub-demo"
+vm_size               = "Standard_B2s"
+admin_username        = "azureuser"
+admin_ssh_public_key  = "ssh-ed25519 AAAA... your_key"
+servicebus_sku        = "Standard"
+
+teammate_principal_object_ids = [
+	"00000000-0000-0000-0000-000000000000"
+]
+
+teammate_ssh_public_keys = [
+	"ssh-ed25519 AAAA... teammate1",
+	"ssh-ed25519 AAAA... teammate2"
+]

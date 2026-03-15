@@ -127,52 +127,27 @@ docker-compose up -d --build
 docker-compose down
 ```
 
+## Terraform
+
+Infra base en Azure (RG + red + VM + Service Bus) en:
+
+`infra/terraform`
+
+Uso rapido:
+
+```bash
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars
+# editar terraform.tfvars con tu clave SSH publica
+
+terraform init
+terraform plan
+terraform apply
+```
+
+Cuando termine, revisa los outputs para IP publica y datos de Service Bus.
+
 ## Notas
 
 - CQRS guarda datos en memoria; al reiniciar se pierde el estado.
 - El publisher de Pub/Sub termina cuando acaba de enviar mensajes.
-
-**3. Add more commands**
-
-```bash
-curl -X POST http://localhost:3001/command \
-  -H "Content-Type: application/json" \
-  -d '{"id": "user-002", "name": "Bob Smith"}'
-
-curl -X POST http://localhost:3001/command \
-  -H "Content-Type: application/json" \
-  -d '{"id": "user-003", "name": "Carol White"}'
-```
-
-**4. Query specific item**
-
-```bash
-curl http://localhost:3002/query/user-001
-```
-
-#### Option 2: Using VS Code REST Client
-
-Create a file `test.http` in the root directory:
-
-```http
-### Send command
-POST http://localhost:3001/command
-Content-Type: application/json
-
-{
-  "id": "user-001",
-  "name": "Alice Johnson"
-}
-
-### Query all data
-GET http://localhost:3002/query
-
-### Query specific item
-GET http://localhost:3002/query/user-001
-
-### Health check
-GET http://localhost:3001/health
-GET http://localhost:3002/health
-```
-
-Click "Send Request" above each endpoint.
