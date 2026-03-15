@@ -70,7 +70,7 @@ app.get('/command/stats', (req: Request, res: Response) => {
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'Command Service is running', port: PORT });
+  res.json({ status: 'Command Service is running :)', port: PORT });
 });
 
 // Start server

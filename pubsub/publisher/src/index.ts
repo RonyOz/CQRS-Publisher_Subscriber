@@ -28,7 +28,7 @@ async function main() {
         body: JSON.stringify({
           id: '1',
           event: 'UserCreated',
-          name: 'Alice Johnson',
+          name: 'Juan Pablo Parra',
           timestamp: new Date().toISOString(),
         }),
       },
@@ -36,7 +36,7 @@ async function main() {
         body: JSON.stringify({
           id: '2',
           event: 'UserCreated',
-          name: 'Bob Smith',
+          name: 'Stick Martinez',
           timestamp: new Date().toISOString(),
         }),
       },

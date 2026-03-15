@@ -75,7 +75,7 @@ app.get('/query/:id', async (req: Request, res: Response) => {
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'Query Service is running', port: PORT });
+  res.json({ status: 'Query Service is running :)', port: PORT });
 });
 
 // Start server
