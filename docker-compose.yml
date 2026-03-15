@@ -1,0 +1,104 @@
+version: '3.8'
+
+# ══════════════════════════════════════════════════════════════
+#  CQRS + Pub/Sub - Docker Compose
+#  Uso local:
+#    1. cp .env.example .env  → rellenar SERVICE_BUS_CONNECTION_STRING
+#    2. docker-compose up -d --build
+# ══════════════════════════════════════════════════════════════
+
+services:
+
+  # ── CQRS: Write-side ──────────────────────────────────────
+  command-service:
+    build:
+      context: ./cqrs/command-service
+      dockerfile: Dockerfile
+    container_name: cqrs-command
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+    networks:
+      - cloud-patterns
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # ── CQRS: Read-side ───────────────────────────────────────
+  query-service:
+    build:
+      context: ./cqrs/query-service
+      dockerfile: Dockerfile
+    container_name: cqrs-query
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      # Usa el nombre de servicio Docker como hostname interno
+      - COMMAND_SERVICE_URL=http://command-service:3001
+    depends_on:
+      command-service:
+        condition: service_healthy
+    networks:
+      - cloud-patterns
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # ── Pub/Sub: Subscriber A ─────────────────────────────────
+  # Los subscribers se inician ANTES que el publisher para
+  # que estén escuchando cuando lleguen los mensajes.
+  subscriber-a:
+    build:
+      context: ./pubsub/subscriber-a
+      dockerfile: Dockerfile
+    container_name: pubsub-subscriber-a
+    environment:
+      - SERVICE_BUS_CONNECTION_STRING=${SERVICE_BUS_CONNECTION_STRING}
+    networks:
+      - cloud-patterns
+    restart: unless-stopped
+
+  # ── Pub/Sub: Subscriber B ─────────────────────────────────
+  subscriber-b:
+    build:
+      context: ./pubsub/subscriber-b
+      dockerfile: Dockerfile
+    container_name: pubsub-subscriber-b
+    environment:
+      - SERVICE_BUS_CONNECTION_STRING=${SERVICE_BUS_CONNECTION_STRING}
+    networks:
+      - cloud-patterns
+    restart: unless-stopped
+
+  # ── Pub/Sub: Publisher ────────────────────────────────────
+  # El publisher envía mensajes y termina (proceso batch).
+  # Se inicia después de los subscribers.
+  publisher:
+    build:
+      context: ./pubsub/publisher
+      dockerfile: Dockerfile
+    container_name: pubsub-publisher
+    environment:
+      - SERVICE_BUS_CONNECTION_STRING=${SERVICE_BUS_CONNECTION_STRING}
+    depends_on:
+      - subscriber-a
+      - subscriber-b
+    networks:
+      - cloud-patterns
+    # No restart: el publisher termina solo tras enviar los mensajes
+    restart: "no"
+
+# ── Red interna ───────────────────────────────────────────
+networks:
+  cloud-patterns:
+    driver: bridge
