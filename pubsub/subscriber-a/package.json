@@ -1,0 +1,22 @@
+{
+  "name": "subscriber-a",
+  "version": "1.0.0",
+  "description": "Subscriber A - Azure Service Bus demonstration",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["pubsub", "subscriber", "azure", "service-bus"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/service-bus": "^7.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}
